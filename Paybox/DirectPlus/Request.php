@@ -5,6 +5,7 @@ namespace Lexik\Bundle\PayboxBundle\Paybox\DirectPlus;
 use Lexik\Bundle\PayboxBundle\Event\PayboxEvents;
 use Lexik\Bundle\PayboxBundle\Event\PayboxResponseEvent;
 use Lexik\Bundle\PayboxBundle\Paybox\AbstractRequest;
+use Lexik\Bundle\PayboxBundle\Paybox\System\Tools;
 use Lexik\Bundle\PayboxBundle\Transport\TransportInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -63,11 +64,13 @@ class Request extends AbstractRequest
     protected function initGlobals(array $parameters)
     {
         $this->globals = array(
-            'production' => isset($parameters['production']) ? $parameters['production'] : false,
-            'currencies' => $parameters['currencies'],
-            'site'       => $parameters['site'],
-            'rang'       => $parameters['rang'],
-            'cle'        => $parameters['cle'],
+            'production'            => isset($parameters['production']) ? $parameters['production'] : false,
+            'currencies'            => $parameters['currencies'],
+            'site'                  => $parameters['site'],
+            'rang'                  => $parameters['rang'],
+            'hmac_key'              => $parameters['hmac']['key'],
+            'hmac_algorithm'        => $parameters['hmac']['algorithm'],
+            'hmac_signature_name'   => $parameters['hmac']['signature_name'],
         );
     }
 
@@ -79,7 +82,7 @@ class Request extends AbstractRequest
         $this->setParameter('VERSION', null); // 'VERSION' must be the first parameter so it have to be declared first...
         $this->setParameter('SITE',    $this->globals['site']);
         $this->setParameter('RANG',    $this->globals['rang']);
-        $this->setParameter('CLE',     $this->globals['cle']);
+        $this->setParameter('HASH',    $this->globals['hmac_algorithm']);
     }
 
     /**
@@ -103,6 +106,11 @@ class Request extends AbstractRequest
     public function getParameters()
     {
         $resolver = new ParameterResolver($this->globals['currencies']);
+        $this->parameters = $resolver->resolve($this->parameters);
+
+        if (null === $this->getParameter('HMAC')) {
+            $this->setParameter('HMAC', $this->computeHmac());
+        }
 
         return $resolver->resolve($this->parameters);
     }

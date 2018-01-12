@@ -23,7 +23,6 @@ class ParameterResolver extends AbstractParameterResolver
         'TYPE'                => '%05d',
         'SITE'                => '%07d',
         'RANG'                => '%03d',
-        'CLE'                 => '%s',
         'NUMQUESTION'         => '%010d',
         'DATEQ'               => '%014s',
         'ACQUEREUR'           => null,
@@ -51,6 +50,8 @@ class ParameterResolver extends AbstractParameterResolver
         'SHA-1'               => null,
         'STATUS'              => null,
         'TYPECARTE'           => null,
+        'HASH'                => null,
+        'HMAC'                => null,
     );
 
     /**
@@ -61,9 +62,9 @@ class ParameterResolver extends AbstractParameterResolver
         'TYPE',
         'SITE',
         'RANG',
-        'CLE',
         'NUMQUESTION',
         'DATEQ',
+        'HASH',
     );
 
     /**
