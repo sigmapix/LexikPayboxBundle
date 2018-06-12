@@ -24,6 +24,7 @@ services:
         arguments: ['%lexik_paybox.parameters%', '%lexik_paybox.servers%', '@logger', '@event_dispatcher', '@lexik_paybox.transport']
         tags:
             - { name: monolog.logger, channel: payment }
+        shared: false
 
     lexik_paybox.transport:
         class:     '%lexik_paybox.transport.class%'
